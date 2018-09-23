@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="Login">
+    <attr name="type_login_page"/>
+    <attr name="type_username_field" />
+    </declare-styleable>
+    <attr name="type_username_field" format="enum">
+        <enum name="email" value="0"/>
+        <enum name="mobile" value="1"/>
+        <enum name="username" value="2"/>
+        <enum name="username_email" value="3"/>
+        <enum name="username_mobile" value="4"/>
+        <enum name="mobile_email" value="5"/>
+        <enum name="mobile_email_username" value="6"/>
+    </attr>
+    <attr name="type_login_page" format="enum">
+        <!-- none for only login mode -->
+        <enum name="none" value="0"/>
+        <enum name="with_skip" value="1"/>
+        <enum name="with_register" value="2"/>
+        <enum name="with_register_skip" value="3"/>
+    </attr>
+</resources>

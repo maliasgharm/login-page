@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">صفحه ورود</string>
+    <string name="login">ورود</string>
+    <string name="register">ثبت نام</string>
+    <string name="email_or_mobile">ایمیل یا شماره تلفن همراه</string>
+    <string name="password">رمز عبور</string>
+    <string name="username_or_mobile_or_email">نام کاربری یا شماره تلفن یا ایمیل</string>
+    <string name="mobile">شماره تلفن همراه</string>
+    <string name="email">ایمیل</string>
+    <string name="skip">رد شدن</string>
+    <string name="re_password">تکرار رمز عبور</string>
+    <string name="have_you_already_registered">قبلا ثبت نام کرده اید ؟</string>
+    <string name="mobile_must_by_zero">شماره تلفن باید همراه با ۰ باشد</string>
+    <string name="mobile_invalid">شماره تلفن صحیح نمیباشد</string>
+    <string name="email_is_short">ایمیل کوتاه میباشد !</string>
+    <string name="email_invalid">ایمیل صحیح نمیباشد !</string>
+    <string name="username_is_short">نام کاربری کوتاه میباشد</string>
+    <string name="this_section_can_not_be_empty">این قسمت نمیتواند خالی باشد !</string>
+    <string name="password_is_short">رمز عبور کوتاه است</string>
+    <string name="password_is_long">رمز عبور بلند است</string>
+    <string name="password_does_not_match">رمز عبور مطابقت ندارد !</string>
+    <string name="username_invalid">نام کاربری نامعتبر است</string>
+    <string name="mobile_is_short">شماره موبایل کوتاه است</string>
+</resources>
