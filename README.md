@@ -3,7 +3,21 @@
 
 [![](https://jitpack.io/v/maliasgharm/PageLoginExample.svg)](https://jitpack.io/#maliasgharm/PageLoginExample)
 
+Step 1. Add it in your root build.gradle at the end of repositories:
 
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+Step 2. Add the dependency
+
+	dependencies {
+	        implementation 'com.github.maliasgharm:PageLoginExample:0.1.0-alpha'
+	}
+        
+        
 You Must Decleare layout on Activity 
 
 ```JAVA
