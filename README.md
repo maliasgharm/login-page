@@ -87,9 +87,31 @@ for Draw layout file write this code on Below of code :
         />
 ```
 
-type_login_page : 
+```xml
+app:type_login_page : 
+```
 
 | attr | description |
 | :-- | :-- |
 | none | show only login page | 
 | with_skip | will be displayed login and skip login |
+| with_register | will be displayed login and skip login |
+| with_register_skip | will be displayed login and skip login |
+
+
+```xml
+app:type_username_field : 
+```
+
+| attr | description |
+| :-- | :-- |
+| email | Set type Of Input equal Email| 
+| mobile  | Set type Of Input equal Mobile |
+| username   | Set type Of Input Any text except Email and Mobile |
+| username_email   | Set type Of Input equal Any text and Email except Mobile  |
+| username_mobile    | Set type Of Input equal Any text and Mobile except Email |
+| mobile_email    | Set type Of Input equal Mobile and Email |
+| mobile_email_username    | Set type Of Input equal Any text |
+
+
+
