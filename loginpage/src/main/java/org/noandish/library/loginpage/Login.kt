@@ -592,7 +592,7 @@ class Login @JvmOverloads constructor(
         if (child!!.tag == Login::class.java)
             super.addView(child, params)
         else if (child is EditText) {
-            addCustomEditText(child.hint.toString(), id)
+            addCustomEditText(child.hint.toString(), child.id)
         }
     }
 
