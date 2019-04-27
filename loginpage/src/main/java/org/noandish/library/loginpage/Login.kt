@@ -1,11 +1,13 @@
 package org.noandish.library.loginpage
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Typeface
 import android.text.InputType
 import android.text.SpannableString
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -27,10 +29,11 @@ class Login @JvmOverloads constructor(
         this.type_username = type
     }
 
+    private val layoutMore = LinearLayout(context)
     private var type_username = 5
     private var type_login_view = 3
     public var onLoginChangeListener: OnLoginChangeListener? = null
-       set
+        set
 
     private var layer_login: RelativeLayout
     private var layer_register: RelativeLayout
@@ -38,20 +41,25 @@ class Login @JvmOverloads constructor(
     private var custom_text_input_username = ""
 
     init {
+        layoutMore.orientation = LinearLayout.VERTICAL
+        layoutMore.gravity = Gravity.CENTER
 
         layer_main_splash = RelativeLayout(context)
+        layer_main_splash.tag = Login::class.java
         addView(layer_main_splash, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
                 , ViewGroup.LayoutParams.MATCH_PARENT))
 
         layer_login = RelativeLayout(context)
+        layer_login.tag = Login::class.java
         addView(layer_login, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
                 , ViewGroup.LayoutParams.MATCH_PARENT))
-        layer_login.x = (-Utils.screenWidth).toFloat()
+        layer_login.x = (-screenWidth).toFloat()
 
         layer_register = RelativeLayout(context)
+        layer_register.tag = Login::class.java
         addView(layer_register, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
                 , ViewGroup.LayoutParams.MATCH_PARENT))
-        layer_register.x = (Utils.screenWidth).toFloat()
+        layer_register.x = (screenWidth).toFloat()
 
         if (attrs != null) run {
             val typedArray = context.theme.obtainStyledAttributes(
@@ -82,7 +90,7 @@ class Login @JvmOverloads constructor(
         val linearLayout = LinearLayout(context)
         linearLayout.orientation = LinearLayout.VERTICAL
         linearLayout.gravity = Gravity.CENTER
-        val params_btn = RelativeLayout.LayoutParams((Utils.screenWidth / 1.2).toInt(), RelativeLayout.LayoutParams.WRAP_CONTENT)
+        val params_btn = RelativeLayout.LayoutParams((screenWidth / 1.2).toInt(), RelativeLayout.LayoutParams.WRAP_CONTENT)
         params_btn.topMargin = 50
         params_btn.bottomMargin = 50
         val btn_login = Button(context)
@@ -118,8 +126,8 @@ class Login @JvmOverloads constructor(
      * [showLogin] a function for show page login
      */
     public fun showLogin() {
-        layer_main_splash.animate().x(Utils.screenWidth.toFloat()).start()
-        layer_register.animate().x(Utils.screenWidth.toFloat()).start()
+        layer_main_splash.animate().x(screenWidth.toFloat()).start()
+        layer_register.animate().x(screenWidth.toFloat()).start()
         layer_login.animate().x(0f).start()
     }
 
@@ -129,8 +137,8 @@ class Login @JvmOverloads constructor(
      */
     public fun showRegister() {
         if (type_login_view == TYPE_WITH_REGISTER_AND_SKIP || type_login_view == TYPE_WITH_REGISTER) {
-            layer_login.animate().x(Utils.screenWidth.toFloat()).start()
-            layer_main_splash.animate().x(Utils.screenWidth.toFloat()).start()
+            layer_login.animate().x(screenWidth.toFloat()).start()
+            layer_main_splash.animate().x(screenWidth.toFloat()).start()
             layer_register.animate().x(0f).start()
         }
     }
@@ -143,7 +151,7 @@ class Login @JvmOverloads constructor(
         layer_login.addView(linearLayout, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 
 
-        val params1 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Utils.screenHeight / 6)
+        val params1 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, screenHeight / 6)
         val tv_title = TextView(context)
         params1.bottomMargin = 40
         tv_title.text = context.getString(R.string.login)
@@ -154,10 +162,13 @@ class Login @JvmOverloads constructor(
 
         linearLayout.addView(tv_title, params1)
 
-        val params2 = LinearLayout.LayoutParams((Utils.screenWidth / 1.5).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+        val params2 = LinearLayout.LayoutParams((screenWidth / 1.5).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
         params2.setMargins(0, 15, 0, 15)
         val edt_user = EditText(context)
         edt_user.setPadding(9, 9, 9, 9)
+        if (type_username == TYPE_INNPUT_USERNAME_MOBILE)
+            edt_user.maxEms = 11
+
         edt_user.hint = context.getString(R.string.email_or_mobile)
         edt_user.gravity = Gravity.CENTER
         edt_user.textSize = 18f
@@ -283,7 +294,7 @@ class Login @JvmOverloads constructor(
         layer_register.addView(linearLayout, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 
 
-        val params1 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Utils.screenHeight / 6)
+        val params1 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, screenHeight / 6)
         val tv_title = TextView(context)
         params1.bottomMargin = 40
         tv_title.text = context.getString(R.string.register)
@@ -295,7 +306,7 @@ class Login @JvmOverloads constructor(
 
         linearLayout.addView(tv_title, params1)
 
-        val params2 = LinearLayout.LayoutParams((Utils.screenWidth / 1.5).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+        val params2 = LinearLayout.LayoutParams((screenWidth / 1.5).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
         params2.setMargins(0, 15, 0, 15)
         val edt_user = EditText(context)
         edt_user.setPadding(9, 9, 9, 9)
@@ -361,42 +372,39 @@ class Login @JvmOverloads constructor(
                 register(edt_user, edt_password, edt_password2)
             }
         })
+        linearLayout.addView(layoutMore)
         linearLayout.addView(btn_register, params3)
 
         val btn_login = TextView(context)
         val span_text = SpannableString(context.getString(R.string.have_you_already_registered))
         btn_login.text = span_text
         btn_login.setTextAppearance(context,
-                R.style.AudioFileInfoOverlayText);
+                R.style.AudioFileInfoOverlayText)
         btn_login.gravity = Gravity.CENTER
-        btn_login.setOnClickListener(object : OnClickListener {
-            override fun onClick(v: View?) {
-                showLogin()
-            }
-
-        })
+        btn_login.setOnClickListener { showLogin() }
         linearLayout.addView(btn_login, params4)
         if (type_login_view == TYPE_WITH_SKIP || type_login_view == TYPE_WITH_REGISTER_AND_SKIP) {
-            val btn_skip = TextView(context)
-            btn_skip.text = context.getString(R.string.skip)
-            btn_skip.textSize = 18f
-            btn_skip.setTypeface(null, Typeface.BOLD)
-            btn_skip.setTextColor(Color.BLACK)
-            btn_skip.setPadding(20, 20, 20, 20)
-            btn_skip.gravity = Gravity.CENTER
+            val btnSkip = TextView(context)
+            btnSkip.text = context.getString(R.string.skip)
+            btnSkip.textSize = 18f
+            btnSkip.setTypeface(null, Typeface.BOLD)
+            btnSkip.setTextColor(Color.BLACK)
+            btnSkip.setPadding(20, 20, 20, 20)
+            btnSkip.gravity = Gravity.CENTER
             val params5 = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
             params5.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
             params5.addRule(RelativeLayout.CENTER_HORIZONTAL)
-            btn_skip.setOnClickListener(object : OnClickListener {
+            btnSkip.setOnClickListener(object : OnClickListener {
                 override fun onClick(v: View?) {
                     skip()
                 }
 
             })
-            layer_register.addView(btn_skip, params5)
+            layer_register.addView(btnSkip, params5)
         }
         layer_register.setBackgroundColor(Color.parseColor("#55ffffff"))
     }
+
 
     private fun register(edt_username: EditText
                          , edt_password: EditText
@@ -464,8 +472,15 @@ class Login @JvmOverloads constructor(
             edt_password_re.error = context.getString(R.string.password_does_not_match)
             return
         }
-        if (onLoginChangeListener != null)
-            onLoginChangeListener!!.onRegistered(username, password)
+        if (onLoginChangeListener != null) {
+            val arrayEditTexts = ArrayList<EditText>()
+            for (i in 0 until layoutMore.childCount) {
+                val view = layoutMore.getChildAt(i)
+                if (view is EditText)
+                    arrayEditTexts.add(view)
+            }
+            onLoginChangeListener!!.onRegistered(username, password, arrayEditTexts.toTypedArray())
+        }
     }
 
     private fun login(edt_username: EditText, edt_password: EditText) {
@@ -556,27 +571,58 @@ class Login @JvmOverloads constructor(
             onLoginChangeListener!!.onSkiped()
     }
 
-    companion object {
+    public fun addCustomEditText(hint: String, id: Int) {
+        val params2 = LinearLayout.LayoutParams((screenWidth / 1.5).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+        params2.setMargins(0, 15, 0, 15)
+        val edtCustom = EditText(context)
+        edtCustom.setPadding(9, 9, 9, 9)
+        if (type_username == TYPE_INNPUT_USERNAME_MOBILE)
+            edtCustom.maxEms = 11
+
+        edtCustom.hint = hint
+        edtCustom.id = id
+        edtCustom.gravity = Gravity.CENTER
+        edtCustom.textSize = 18f
+        edtCustom.setBackgroundResource(R.drawable.bg_edt_login)
+        edtCustom.inputType = EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        layoutMore.addView(edtCustom, params2)
+    }
+
+    override fun addView(child: View?, params: ViewGroup.LayoutParams?) {
+        if (child!!.tag == Login::class.java)
+            super.addView(child, params)
+        else if (child is EditText) {
+            addCustomEditText(child.hint.toString(), id)
+        }
+    }
+
+    val screenWidth: Int
+        get() = Resources.getSystem().displayMetrics.widthPixels
+
+    val screenHeight: Int
+        get() = Resources.getSystem().displayMetrics.heightPixels
+
+    /**
+     * [OnLoginChangeListener] a listener for change login status
+     */
+    interface OnLoginChangeListener {
+        /**
+         * [onLogined] a [user]  username and [pass] password for Login input and run with click login button
+         */
+        fun onLogined(user: String, pass: String)
 
         /**
-         * [OnLoginChangeListener] a listener for change login status
+         * [onRegistered] a [user]  username and [pass] password for Register input and run with click register button
          */
-        interface OnLoginChangeListener {
-            /**
-             * [onLogined] a [user]  username and [pass] password for Login input and run with click login button
-             */
-            fun onLogined(user: String, pass: String)
+        fun onRegistered(user: String, pass: String, args: Array<EditText>)
 
-            /**
-             * [onRegistered] a [user]  username and [pass] password for Register input and run with click register button
-             */
-            fun onRegistered(user: String, pass: String)
+        /**
+         * [onSkiped] clicked Skip button
+         */
+        fun onSkiped()
+    }
 
-            /**
-             * [onSkiped] clicked Skip button
-             */
-            fun onSkiped()
-        }
+    companion object {
 
         /**
          * all type for show page login

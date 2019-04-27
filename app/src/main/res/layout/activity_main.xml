@@ -11,6 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:type_login_page="with_register_skip"
-        app:type_username_field="mobile_email"
-        />
+        app:type_username_field="mobile_email">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Firstname"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Lastname"/>
+
+    </org.noandish.library.loginpage.Login>
 </android.support.constraint.ConstraintLayout>
