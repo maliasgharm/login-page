@@ -102,7 +102,7 @@ app:type_username_field :
 
 
 
-Ability to add texting in register
+Ability to add EditText in register
 
 ```xml
 
