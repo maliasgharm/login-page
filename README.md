@@ -123,7 +123,7 @@ Ability to add EditText in register
             android:hint="Lastname"/>
 
     </org.noandish.library.loginpage.Login>
-    ```
+```
     
      or 
      
