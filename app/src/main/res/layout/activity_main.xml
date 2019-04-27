@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:type_login_page="with_register_skip"
-        app:type_username_field="mobile_email">
+        app:type_username_field="mobile">
 
         <EditText
             android:layout_width="match_parent"

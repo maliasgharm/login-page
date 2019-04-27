@@ -4,10 +4,11 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Typeface
+import android.support.v4.widget.TextViewCompat
+import android.text.InputFilter
 import android.text.InputType
 import android.text.SpannableString
 import android.util.AttributeSet
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -25,41 +26,40 @@ class Login @JvmOverloads constructor(
      *  [inputUsername] a [type]  for type input field username and access to
      *  enter a special character
      */
-    public fun inputUsername(type: Int) {
-        this.type_username = type
+    fun inputUsername(type: Int) {
+        this.typeUsername = type
     }
 
     private val layoutMore = LinearLayout(context)
-    private var type_username = 5
-    private var type_login_view = 3
-    public var onLoginChangeListener: OnLoginChangeListener? = null
-        set
+    private var typeUsername = 5
+    private var typeLoginView = 3
+    var onLoginChangeListener: OnLoginChangeListener? = null
 
-    private var layer_login: RelativeLayout
-    private var layer_register: RelativeLayout
-    private var layer_main_splash: RelativeLayout
-    private var custom_text_input_username = ""
+    private var layerLogin: RelativeLayout
+    private var layerRegister: RelativeLayout
+    private var layerMainSplash: RelativeLayout
+    private var customTextInputUsername = ""
 
     init {
         layoutMore.orientation = LinearLayout.VERTICAL
         layoutMore.gravity = Gravity.CENTER
 
-        layer_main_splash = RelativeLayout(context)
-        layer_main_splash.tag = Login::class.java
-        addView(layer_main_splash, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
+        layerMainSplash = RelativeLayout(context)
+        layerMainSplash.tag = Login::class.java
+        addView(layerMainSplash, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
                 , ViewGroup.LayoutParams.MATCH_PARENT))
 
-        layer_login = RelativeLayout(context)
-        layer_login.tag = Login::class.java
-        addView(layer_login, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
+        layerLogin = RelativeLayout(context)
+        layerLogin.tag = Login::class.java
+        addView(layerLogin, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
                 , ViewGroup.LayoutParams.MATCH_PARENT))
-        layer_login.x = (-screenWidth).toFloat()
+        layerLogin.x = (-screenWidth).toFloat()
 
-        layer_register = RelativeLayout(context)
-        layer_register.tag = Login::class.java
-        addView(layer_register, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
+        layerRegister = RelativeLayout(context)
+        layerRegister.tag = Login::class.java
+        addView(layerRegister, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
                 , ViewGroup.LayoutParams.MATCH_PARENT))
-        layer_register.x = (screenWidth).toFloat()
+        layerRegister.x = (screenWidth).toFloat()
 
         if (attrs != null) run {
             val typedArray = context.theme.obtainStyledAttributes(
@@ -68,8 +68,8 @@ class Login @JvmOverloads constructor(
                     0, 0)
             //Reading values from the XML layout
             try {
-                type_login_view = typedArray.getInt(R.styleable.Login_type_login_page, TYPE_WITH_REGISTER_AND_SKIP)
-                type_username = typedArray.getInt(R.styleable.Login_type_username_field, TYPE_INNPUT_USERNAME_MOBILE_EMAIL_USERNAME)
+                typeLoginView = typedArray.getInt(R.styleable.Login_type_login_page, TYPE_WITH_REGISTER_AND_SKIP)
+                typeUsername = typedArray.getInt(R.styleable.Login_type_username_field, TYPE_INPUT_USERNAME_MOBILE_EMAIL_USERNAME)
 
             } finally {
                 typedArray.recycle()
@@ -77,8 +77,8 @@ class Login @JvmOverloads constructor(
         }
 
         login()
-        if (type_login_view == TYPE_WITH_REGISTER
-                || type_login_view == TYPE_WITH_REGISTER_AND_SKIP) {
+        if (typeLoginView == TYPE_WITH_REGISTER
+                || typeLoginView == TYPE_WITH_REGISTER_AND_SKIP) {
             main()
             register()
         } else {
@@ -90,56 +90,51 @@ class Login @JvmOverloads constructor(
         val linearLayout = LinearLayout(context)
         linearLayout.orientation = LinearLayout.VERTICAL
         linearLayout.gravity = Gravity.CENTER
-        val params_btn = RelativeLayout.LayoutParams((screenWidth / 1.2).toInt(), RelativeLayout.LayoutParams.WRAP_CONTENT)
-        params_btn.topMargin = 50
-        params_btn.bottomMargin = 50
-        val btn_login = Button(context)
-        btn_login.text = context.getString(R.string.login)
-        btn_login.setBackgroundResource(R.drawable.bg_btn_main_login)
-        btn_login.setPadding(30, 0, 30, 0)
-        linearLayout.addView(btn_login, params_btn)
-        btn_login.setOnClickListener(object : OnClickListener {
-            override fun onClick(v: View?) {
-                showLogin()
-            }
-        })
-        if (type_login_view == TYPE_WITH_REGISTER
-                || type_login_view == TYPE_WITH_REGISTER_AND_SKIP) {
-            val btn_register = Button(context)
-            btn_register.text = context.getString(R.string.register)
-            btn_register.setPadding(30, 0, 30, 0)
-            btn_register.setBackgroundResource(R.drawable.bg_btn_main_login)
-            linearLayout.addView(btn_register, params_btn)
-            val params = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT)
-            params.addRule(RelativeLayout.CENTER_IN_PARENT)
-            layer_main_splash.addView(linearLayout, params)
-            layer_main_splash.setBackgroundColor(Color.parseColor("#22ffffff"))
-            btn_register.setOnClickListener(object : OnClickListener {
-                override fun onClick(v: View?) {
-                    showRegister()
-                }
-            })
+        val paramsBtn = LayoutParams((screenWidth / 1.2).toInt(), LayoutParams.WRAP_CONTENT)
+        paramsBtn.topMargin = 50
+        paramsBtn.bottomMargin = 50
+        val btnLogin = Button(context)
+        btnLogin.text = context.getString(R.string.login)
+        btnLogin.setBackgroundResource(R.drawable.bg_btn_main_login)
+        btnLogin.setPadding(30, 0, 30, 0)
+        linearLayout.addView(btnLogin, paramsBtn)
+        btnLogin.setOnClickListener { showLogin() }
+        if (typeLoginView == TYPE_WITH_REGISTER
+                || typeLoginView == TYPE_WITH_REGISTER_AND_SKIP) {
+            val btnRegister = Button(context)
+            btnRegister.text = context.getString(R.string.register)
+            btnRegister.setPadding(30, 0, 30, 0)
+            btnRegister.setBackgroundResource(R.drawable.bg_btn_main_login)
+            linearLayout.addView(btnRegister, paramsBtn)
+            val params = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+            params.addRule(CENTER_IN_PARENT)
+            layerMainSplash.addView(linearLayout, params)
+            @Suppress("SpellCheckingInspection")
+            layerMainSplash.setBackgroundColor(Color.parseColor("#22ffffff"))
+            btnRegister.setOnClickListener { showRegister() }
         }
     }
 
     /**
      * [showLogin] a function for show page login
      */
-    public fun showLogin() {
-        layer_main_splash.animate().x(screenWidth.toFloat()).start()
-        layer_register.animate().x(screenWidth.toFloat()).start()
-        layer_login.animate().x(0f).start()
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun showLogin() {
+        layerMainSplash.animate().x(screenWidth.toFloat()).start()
+        layerRegister.animate().x(screenWidth.toFloat()).start()
+        layerLogin.animate().x(0f).start()
     }
 
     /**
      * [showRegister] a function for show page register
-     * if [type_login_view] equals [TYPE_WITH_REGISTER_AND_SKIP] OR [TYPE_WITH_REGISTER]
+     * if [typeLoginView] equals [TYPE_WITH_REGISTER_AND_SKIP] OR [TYPE_WITH_REGISTER]
      */
-    public fun showRegister() {
-        if (type_login_view == TYPE_WITH_REGISTER_AND_SKIP || type_login_view == TYPE_WITH_REGISTER) {
-            layer_login.animate().x(screenWidth.toFloat()).start()
-            layer_main_splash.animate().x(screenWidth.toFloat()).start()
-            layer_register.animate().x(0f).start()
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun showRegister() {
+        if (typeLoginView == TYPE_WITH_REGISTER_AND_SKIP || typeLoginView == TYPE_WITH_REGISTER) {
+            layerLogin.animate().x(screenWidth.toFloat()).start()
+            layerMainSplash.animate().x(screenWidth.toFloat()).start()
+            layerRegister.animate().x(0f).start()
         }
     }
 
@@ -148,242 +143,98 @@ class Login @JvmOverloads constructor(
         val linearLayout = LinearLayout(context)
         linearLayout.orientation = LinearLayout.VERTICAL
         linearLayout.gravity = Gravity.CENTER
-        layer_login.addView(linearLayout, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        layerLogin.addView(linearLayout, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 
 
         val params1 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, screenHeight / 6)
-        val tv_title = TextView(context)
+        val tvTitle = TextView(context)
         params1.bottomMargin = 40
-        tv_title.text = context.getString(R.string.login)
-        tv_title.textSize = 22f
-        tv_title.gravity = Gravity.CENTER
-        tv_title.setTypeface(null, Typeface.BOLD)
-        tv_title.setTextColor(Color.parseColor("#2D8469"))
+        tvTitle.text = context.getString(R.string.login)
+        tvTitle.textSize = 22f
+        tvTitle.gravity = Gravity.CENTER
+        tvTitle.setTypeface(null, Typeface.BOLD)
+        tvTitle.setTextColor(Color.parseColor("#2D8469"))
 
-        linearLayout.addView(tv_title, params1)
+        linearLayout.addView(tvTitle, params1)
 
         val params2 = LinearLayout.LayoutParams((screenWidth / 1.5).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
         params2.setMargins(0, 15, 0, 15)
-        val edt_user = EditText(context)
-        edt_user.setPadding(9, 9, 9, 9)
-        if (type_username == TYPE_INNPUT_USERNAME_MOBILE)
-            edt_user.maxEms = 11
+        val edtUser = EditText(context)
+        edtUser.setPadding(9, 9, 9, 9)
+        if (typeUsername == TYPE_INPUT_USERNAME_MOBILE) {
+            edtUser.filters += InputFilter.LengthFilter(11)
+            edtUser.inputType = InputType.TYPE_CLASS_NUMBER
+        }
+        edtUser.hint = context.getString(R.string.email_or_mobile)
+        edtUser.gravity = Gravity.CENTER
+        edtUser.textSize = 18f
+        edtUser.setBackgroundResource(R.drawable.bg_edt_login)
+        edtUser.inputType = EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        linearLayout.addView(edtUser, params2)
 
-        edt_user.hint = context.getString(R.string.email_or_mobile)
-        edt_user.gravity = Gravity.CENTER
-        edt_user.textSize = 18f
-        edt_user.setBackgroundResource(R.drawable.bg_edt_login)
-        edt_user.inputType = EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-        linearLayout.addView(edt_user, params2)
+        val edtPassword = EditText(context)
+        edtPassword.gravity = Gravity.CENTER
+        edtPassword.setPadding(7, 7, 7, 7)
+        edtPassword.hint = context.getString(R.string.password)
+        edtPassword.inputType = EditorInfo.TYPE_TEXT_VARIATION_PASSWORD
 
-        val edt_password = EditText(context)
-        edt_password.gravity = Gravity.CENTER
-        edt_password.setPadding(7, 7, 7, 7)
-        edt_password.hint = context.getString(R.string.password)
-        edt_password.inputType = EditorInfo.TYPE_TEXT_VARIATION_PASSWORD
-
-        val text_user: String = if (type_username == TYPE_INNPUT_USERNAME_MOBILE_EMAIL_USERNAME
+        val textUser: String = if (typeUsername == TYPE_INPUT_USERNAME_MOBILE_EMAIL_USERNAME
         ) {
             context.getString(R.string.username_or_mobile_or_email)
-        } else if (type_username == TYPE_INNPUT_USERNAME_MOBILE_EMAIL) {
+        } else if (typeUsername == TYPE_INPUT_USERNAME_MOBILE_EMAIL) {
             context.getString(R.string.email_or_mobile)
-        } else if (type_username == TYPE_INNPUT_USERNAME_MOBILE
-                || type_username == TYPE_INNPUT_USERNAME_USERNAME_MOBILE) {
+        } else if (typeUsername == TYPE_INPUT_USERNAME_MOBILE
+                || typeUsername == TYPE_INPUT_USERNAME_USERNAME_MOBILE) {
+            edtUser.filters += InputFilter.LengthFilter(11)
+            edtUser.inputType = InputType.TYPE_CLASS_NUMBER
             context.getString(R.string.mobile)
-        } else if (type_username == TYPE_INNPUT_USERNAME_USERNAME
-                || type_username == TYPE_INNPUT_USERNAME_EMAIL
-                || type_username == TYPE_INNPUT_USERNAME_USERNAME_EMAIL) {
+        } else if (typeUsername == TYPE_INPUT_USERNAME_USERNAME
+                || typeUsername == TYPE_INPUT_USERNAME_EMAIL
+                || typeUsername == TYPE_INPUT_USERNAME_USERNAME_EMAIL) {
             context.getString(R.string.email)
         } else {
-            custom_text_input_username
+            customTextInputUsername
         }
-        edt_user.setHint(text_user)
+        edtUser.hint = textUser
 
 
-        edt_password.setBackgroundResource(R.drawable.bg_edt_login)
-        linearLayout.addView(edt_password, params2)
+        edtPassword.setBackgroundResource(R.drawable.bg_edt_login)
+        linearLayout.addView(edtPassword, params2)
 
-        edt_password.inputType = InputType.TYPE_CLASS_TEXT or
+        edtPassword.inputType = InputType.TYPE_CLASS_TEXT or
                 InputType.TYPE_TEXT_VARIATION_PASSWORD
 
-        val params3 = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+        val params3 = LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT)
-        val params4 = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+        val params4 = LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT)
         //  params3.rightMargin = 50
         params3.topMargin = 25
-        params3.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
-        params4.addRule(RelativeLayout.ALIGN_BOTTOM, R.id.btn_login)
-        params4.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+        params3.addRule(ALIGN_PARENT_LEFT)
+        params4.addRule(ALIGN_BOTTOM, R.id.btn_login)
+        params4.addRule(ALIGN_PARENT_TOP)
         params4.topMargin = 100
-        params4.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-        val btn_login = Button(context)
-        btn_login.setBackgroundResource(R.drawable.bg_btn_login)
-        btn_login.text = context.getString(R.string.login)
-        btn_login.id = R.id.btn_login
-        btn_login.setTextColor(Color.WHITE)
-        linearLayout.addView(btn_login, params3)
-        btn_login.setOnClickListener(object : OnClickListener {
-            override fun onClick(v: View?) {
-                login(edt_user, edt_password)
-            }
-
-        })
-        if (type_login_view == TYPE_WITH_REGISTER
-                || type_login_view == TYPE_WITH_REGISTER_AND_SKIP) {
-            val btn_register = TextView(context)
-            val span_text = SpannableString(context.getString(R.string.register)
+        params4.addRule(ALIGN_PARENT_RIGHT)
+        val btnLogin = Button(context)
+        btnLogin.setBackgroundResource(R.drawable.bg_btn_login)
+        btnLogin.text = context.getString(R.string.login)
+        btnLogin.id = R.id.btn_login
+        btnLogin.setTextColor(Color.WHITE)
+        linearLayout.addView(btnLogin, params3)
+        btnLogin.setOnClickListener { login(edtUser, edtPassword) }
+        if (typeLoginView == TYPE_WITH_REGISTER
+                || typeLoginView == TYPE_WITH_REGISTER_AND_SKIP) {
+            val btnRegister = TextView(context)
+            val spanText = SpannableString(context.getString(R.string.register)
             )
-            btn_register.text = span_text
-            btn_register.setTextAppearance(context,
-                    R.style.AudioFileInfoOverlayText);
-            btn_register.gravity = Gravity.CENTER
-            linearLayout.addView(btn_register, params4)
-            btn_register.setOnClickListener(object : OnClickListener {
-                override fun onClick(v: View?) {
-                    showRegister()
-                }
-            })
+            btnRegister.text = spanText
+            TextViewCompat.setTextAppearance(btnRegister,
+                    R.style.AudioFileInfoOverlayText)
+            btnRegister.gravity = Gravity.CENTER
+            linearLayout.addView(btnRegister, params4)
+            btnRegister.setOnClickListener { showRegister() }
         }
-        if (type_login_view == TYPE_WITH_SKIP || type_login_view == TYPE_WITH_REGISTER_AND_SKIP) {
-            val btn_skip = TextView(context)
-            btn_skip.text = context.getString(R.string.skip)
-            btn_skip.textSize = 18f
-            btn_skip.setTypeface(null, Typeface.BOLD)
-            btn_skip.setTextColor(Color.BLACK)
-            btn_skip.setPadding(20, 20, 20, 20)
-            btn_skip.gravity = Gravity.CENTER
-            val params5 = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
-            params5.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-            params5.addRule(RelativeLayout.CENTER_HORIZONTAL)
-            layer_login.addView(btn_skip, params5)
-            btn_skip.setOnClickListener(object : OnClickListener {
-                override fun onClick(v: View?) {
-                    skip()
-                }
-            })
-        }
-        layer_login.setBackgroundColor(Color.parseColor("#55ffffff"))
-
-        if (type_login_view == TYPE_WITH_SKIP
-                || type_login_view == TYPE_WITH_REGISTER_AND_SKIP) {
-            val btn_skip = TextView(context)
-            btn_skip.text = context.getString(R.string.skip)
-            btn_skip.textSize = 18f
-            btn_skip.setTypeface(null, Typeface.BOLD)
-            btn_skip.setTextColor(Color.BLACK)
-            btn_skip.setPadding(20, 20, 20, 20)
-            btn_skip.gravity = Gravity.CENTER
-            val params5 = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
-            params5.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-            params5.addRule(RelativeLayout.CENTER_HORIZONTAL)
-            btn_skip.setOnClickListener(object : OnClickListener {
-                override fun onClick(v: View?) {
-                    skip()
-                }
-
-            })
-            layer_login.addView(btn_skip, params5)
-        }
-    }
-
-    private fun register() {
-        val linearLayout = LinearLayout(context)
-        linearLayout.orientation = LinearLayout.VERTICAL
-        linearLayout.gravity = Gravity.CENTER
-        layer_register.addView(linearLayout, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-
-
-        val params1 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, screenHeight / 6)
-        val tv_title = TextView(context)
-        params1.bottomMargin = 40
-        tv_title.text = context.getString(R.string.register)
-
-        tv_title.textSize = 22f
-        tv_title.gravity = Gravity.CENTER
-        tv_title.setTypeface(null, Typeface.BOLD)
-        tv_title.setTextColor(Color.parseColor("#2D8469"))
-
-        linearLayout.addView(tv_title, params1)
-
-        val params2 = LinearLayout.LayoutParams((screenWidth / 1.5).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
-        params2.setMargins(0, 15, 0, 15)
-        val edt_user = EditText(context)
-        edt_user.setPadding(9, 9, 9, 9)
-        val text_user: String = if (type_username == TYPE_INNPUT_USERNAME_MOBILE_EMAIL_USERNAME
-                || type_username == TYPE_INNPUT_USERNAME_MOBILE_EMAIL) {
-            context.getString(R.string.email_or_mobile)
-        } else if (type_username == TYPE_INNPUT_USERNAME_MOBILE
-                || type_username == TYPE_INNPUT_USERNAME_USERNAME_MOBILE) {
-            context.getString(R.string.mobile)
-        } else if (type_username == TYPE_INNPUT_USERNAME_USERNAME
-                || type_username == TYPE_INNPUT_USERNAME_EMAIL
-                || type_username == TYPE_INNPUT_USERNAME_USERNAME_EMAIL) {
-            context.getString(R.string.email)
-        } else {
-            custom_text_input_username
-        }
-        edt_user.setHint(text_user)
-        edt_user.gravity = Gravity.CENTER
-        edt_user.textSize = 18f
-        edt_user.setBackgroundResource(R.drawable.bg_edt_login)
-        edt_user.inputType = EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-        linearLayout.addView(edt_user, params2)
-
-        val edt_password = EditText(context)
-        edt_password.gravity = Gravity.CENTER
-        edt_password.setPadding(7, 7, 7, 7)
-        edt_password.setHint(context.getString(R.string.password)
-        )
-        edt_password.inputType = InputType.TYPE_CLASS_TEXT or
-                InputType.TYPE_TEXT_VARIATION_PASSWORD
-        edt_password.setBackgroundResource(R.drawable.bg_edt_login)
-        linearLayout.addView(edt_password, params2)
-
-        var edt_password2 = EditText(context)
-        edt_password2.gravity = Gravity.CENTER
-        edt_password2.setPadding(7, 7, 7, 7)
-        edt_password2.hint = context.getString(R.string.re_password)
-
-        edt_password2.inputType = InputType.TYPE_CLASS_TEXT or
-                InputType.TYPE_TEXT_VARIATION_PASSWORD
-        edt_password2.setBackgroundResource(R.drawable.bg_edt_login)
-        linearLayout.addView(edt_password2, params2)
-
-        val params3 = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT)
-        val params4 = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT)
-        //  params3.rightMargin = 50
-        params3.topMargin = 25
-        params3.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
-        params4.addRule(RelativeLayout.ALIGN_BOTTOM, R.id.btn_login)
-        params4.addRule(RelativeLayout.ALIGN_PARENT_TOP)
-        params4.topMargin = 100
-        params4.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-        val btn_register = Button(context)
-        btn_register.setBackgroundResource(R.drawable.bg_btn_login)
-        btn_register.text = context.getString(R.string.register)
-
-        btn_register.id = R.id.btn_login
-        btn_register.setTextColor(Color.WHITE)
-        btn_register.setOnClickListener(object : OnClickListener {
-            override fun onClick(v: View?) {
-                register(edt_user, edt_password, edt_password2)
-            }
-        })
-        linearLayout.addView(layoutMore)
-        linearLayout.addView(btn_register, params3)
-
-        val btn_login = TextView(context)
-        val span_text = SpannableString(context.getString(R.string.have_you_already_registered))
-        btn_login.text = span_text
-        btn_login.setTextAppearance(context,
-                R.style.AudioFileInfoOverlayText)
-        btn_login.gravity = Gravity.CENTER
-        btn_login.setOnClickListener { showLogin() }
-        linearLayout.addView(btn_login, params4)
-        if (type_login_view == TYPE_WITH_SKIP || type_login_view == TYPE_WITH_REGISTER_AND_SKIP) {
+        if (typeLoginView == TYPE_WITH_SKIP || typeLoginView == TYPE_WITH_REGISTER_AND_SKIP) {
             val btnSkip = TextView(context)
             btnSkip.text = context.getString(R.string.skip)
             btnSkip.textSize = 18f
@@ -391,18 +242,147 @@ class Login @JvmOverloads constructor(
             btnSkip.setTextColor(Color.BLACK)
             btnSkip.setPadding(20, 20, 20, 20)
             btnSkip.gravity = Gravity.CENTER
-            val params5 = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
-            params5.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-            params5.addRule(RelativeLayout.CENTER_HORIZONTAL)
-            btnSkip.setOnClickListener(object : OnClickListener {
-                override fun onClick(v: View?) {
-                    skip()
-                }
-
-            })
-            layer_register.addView(btnSkip, params5)
+            val params5 = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+            params5.addRule(ALIGN_PARENT_BOTTOM)
+            params5.addRule(CENTER_HORIZONTAL)
+            layerLogin.addView(btnSkip, params5)
+            btnSkip.setOnClickListener { skip() }
         }
-        layer_register.setBackgroundColor(Color.parseColor("#55ffffff"))
+
+        @Suppress("SpellCheckingInspection")
+        layerLogin.setBackgroundColor(Color.parseColor("#55ffffff"))
+
+        if (typeLoginView == TYPE_WITH_SKIP
+                || typeLoginView == TYPE_WITH_REGISTER_AND_SKIP) {
+            val btnSkip = TextView(context)
+            btnSkip.text = context.getString(R.string.skip)
+            btnSkip.textSize = 18f
+            btnSkip.setTypeface(null, Typeface.BOLD)
+            btnSkip.setTextColor(Color.BLACK)
+            btnSkip.setPadding(20, 20, 20, 20)
+            btnSkip.gravity = Gravity.CENTER
+            val params5 = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+            params5.addRule(ALIGN_PARENT_BOTTOM)
+            params5.addRule(CENTER_HORIZONTAL)
+            btnSkip.setOnClickListener { skip() }
+            layerLogin.addView(btnSkip, params5)
+        }
+    }
+
+    private fun register() {
+        val linearLayout = LinearLayout(context)
+        linearLayout.orientation = LinearLayout.VERTICAL
+        linearLayout.gravity = Gravity.CENTER
+        layerRegister.addView(linearLayout, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+
+
+        val params1 = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, screenHeight / 6)
+        val tvTitle = TextView(context)
+        params1.bottomMargin = 40
+        tvTitle.text = context.getString(R.string.register)
+
+        tvTitle.textSize = 22f
+        tvTitle.gravity = Gravity.CENTER
+        tvTitle.setTypeface(null, Typeface.BOLD)
+        tvTitle.setTextColor(Color.parseColor("#2D8469"))
+
+        linearLayout.addView(tvTitle, params1)
+
+        val params2 = LinearLayout.LayoutParams((screenWidth / 1.5).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+        params2.setMargins(0, 15, 0, 15)
+        val edtUser = EditText(context)
+        edtUser.setPadding(9, 9, 9, 9)
+
+        val textUser: String = if (typeUsername == TYPE_INPUT_USERNAME_MOBILE_EMAIL_USERNAME
+                || typeUsername == TYPE_INPUT_USERNAME_MOBILE_EMAIL) {
+            context.getString(R.string.email_or_mobile)
+        } else if (typeUsername == TYPE_INPUT_USERNAME_MOBILE
+                || typeUsername == TYPE_INPUT_USERNAME_USERNAME_MOBILE) {
+            edtUser.filters += InputFilter.LengthFilter(11)
+            edtUser.inputType = InputType.TYPE_CLASS_NUMBER
+            context.getString(R.string.mobile)
+        } else if (typeUsername == TYPE_INPUT_USERNAME_USERNAME
+                || typeUsername == TYPE_INPUT_USERNAME_EMAIL
+                || typeUsername == TYPE_INPUT_USERNAME_USERNAME_EMAIL) {
+            context.getString(R.string.email)
+        } else {
+            customTextInputUsername
+        }
+        edtUser.hint = textUser
+        edtUser.gravity = Gravity.CENTER
+        edtUser.textSize = 18f
+        edtUser.setBackgroundResource(R.drawable.bg_edt_login)
+        if (typeUsername == TYPE_INPUT_USERNAME_MOBILE) {
+            edtUser.filters += InputFilter.LengthFilter(11)
+            edtUser.inputType = InputType.TYPE_CLASS_NUMBER
+        } else
+            edtUser.inputType = EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        linearLayout.addView(edtUser, params2)
+
+        val edtPassword = EditText(context)
+        edtPassword.gravity = Gravity.CENTER
+        edtPassword.setPadding(7, 7, 7, 7)
+        edtPassword.hint = context.getString(R.string.password)
+        edtPassword.inputType = InputType.TYPE_CLASS_TEXT or
+                InputType.TYPE_TEXT_VARIATION_PASSWORD
+        edtPassword.setBackgroundResource(R.drawable.bg_edt_login)
+        linearLayout.addView(edtPassword, params2)
+
+        val edtPassword2 = EditText(context)
+        edtPassword2.gravity = Gravity.CENTER
+        edtPassword2.setPadding(7, 7, 7, 7)
+        edtPassword2.hint = context.getString(R.string.re_password)
+
+        edtPassword2.inputType = InputType.TYPE_CLASS_TEXT or
+                InputType.TYPE_TEXT_VARIATION_PASSWORD
+        edtPassword2.setBackgroundResource(R.drawable.bg_edt_login)
+        linearLayout.addView(edtPassword2, params2)
+
+        val params3 = LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT)
+        val params4 = LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT)
+        //  params3.rightMargin = 50
+        params3.topMargin = 25
+        params3.addRule(ALIGN_PARENT_LEFT)
+        params4.addRule(ALIGN_BOTTOM, R.id.btn_login)
+        params4.addRule(ALIGN_PARENT_TOP)
+        params4.topMargin = 100
+        params4.addRule(ALIGN_PARENT_RIGHT)
+        val btnRegister = Button(context)
+        btnRegister.setBackgroundResource(R.drawable.bg_btn_login)
+        btnRegister.text = context.getString(R.string.register)
+
+        btnRegister.id = R.id.btn_login
+        btnRegister.setTextColor(Color.WHITE)
+        btnRegister.setOnClickListener { register(edtUser, edtPassword, edtPassword2) }
+        linearLayout.addView(layoutMore)
+        linearLayout.addView(btnRegister, params3)
+
+        val btnLogin = TextView(context)
+        val spanText = SpannableString(context.getString(R.string.have_you_already_registered))
+        btnLogin.text = spanText
+        TextViewCompat.setTextAppearance(btnLogin,
+                R.style.AudioFileInfoOverlayText)
+        btnLogin.gravity = Gravity.CENTER
+        btnLogin.setOnClickListener { showLogin() }
+        linearLayout.addView(btnLogin, params4)
+        if (typeLoginView == TYPE_WITH_SKIP || typeLoginView == TYPE_WITH_REGISTER_AND_SKIP) {
+            val btnSkip = TextView(context)
+            btnSkip.text = context.getString(R.string.skip)
+            btnSkip.textSize = 18f
+            btnSkip.setTypeface(null, Typeface.BOLD)
+            btnSkip.setTextColor(Color.BLACK)
+            btnSkip.setPadding(20, 20, 20, 20)
+            btnSkip.gravity = Gravity.CENTER
+            val params5 = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+            params5.addRule(ALIGN_PARENT_BOTTOM)
+            params5.addRule(CENTER_HORIZONTAL)
+            btnSkip.setOnClickListener { skip() }
+            layerRegister.addView(btnSkip, params5)
+        }
+        @Suppress("SpellCheckingInspection")
+        layerRegister.setBackgroundColor(Color.parseColor("#55FFFFFF"))
     }
 
 
@@ -411,21 +391,21 @@ class Login @JvmOverloads constructor(
                          , edt_password_re: EditText) {
         val username = edt_username.text.toString()
         val password = edt_password.text.toString()
-        val password_re = edt_password_re.text.toString()
-        if (username.equals("")) {
-            edt_username.setError(context.getString(R.string.this_section_can_not_be_empty))
+        val passwordRe = edt_password_re.text.toString()
+        if (username == "") {
+            edt_username.error = context.getString(R.string.this_section_can_not_be_empty)
             return
         }
         val isMobile = isInteger(username)
         val isEmail = !isMobile && username.contains("@")
 
-        if ((type_username == TYPE_INNPUT_USERNAME_MOBILE_EMAIL_USERNAME
-                        || type_username == TYPE_INNPUT_USERNAME_MOBILE
-                        || type_username == TYPE_INNPUT_USERNAME_MOBILE_EMAIL)
+        if ((typeUsername == TYPE_INPUT_USERNAME_MOBILE_EMAIL_USERNAME
+                        || typeUsername == TYPE_INPUT_USERNAME_MOBILE
+                        || typeUsername == TYPE_INPUT_USERNAME_MOBILE_EMAIL)
                 && isMobile
         ) {
 
-            if (username.length > 0 && !username[0].equals('0')) {
+            if (username.isNotEmpty() && username[0] != '0') {
                 edt_username.error = context.getString(R.string.mobile_must_by_zero)
                 return
             }
@@ -438,9 +418,9 @@ class Login @JvmOverloads constructor(
                 return
             }
 
-        } else if ((type_username == TYPE_INNPUT_USERNAME_MOBILE_EMAIL_USERNAME
-                        || type_username == TYPE_INNPUT_USERNAME_EMAIL
-                        || type_username == TYPE_INNPUT_USERNAME_MOBILE_EMAIL) && isEmail) {
+        } else if ((typeUsername == TYPE_INPUT_USERNAME_MOBILE_EMAIL_USERNAME
+                        || typeUsername == TYPE_INPUT_USERNAME_EMAIL
+                        || typeUsername == TYPE_INPUT_USERNAME_MOBILE_EMAIL) && isEmail) {
             if (username.length < 7) {
                 edt_username.error = context.getString(R.string.email_is_short)
                 return
@@ -452,7 +432,7 @@ class Login @JvmOverloads constructor(
             edt_username.error = context.getString(R.string.username_invalid)
             return
         }
-        if (password.equals("")) {
+        if (password == "") {
             edt_password.error = context.getString(R.string.this_section_can_not_be_empty)
             return
         }
@@ -464,11 +444,11 @@ class Login @JvmOverloads constructor(
             edt_password.error = context.getString(R.string.password_is_long)
             return
         }
-        if (password_re.equals("")) {
+        if (passwordRe == "") {
             edt_password_re.error = context.getString(R.string.this_section_can_not_be_empty)
             return
         }
-        if (!password.equals(password_re)) {
+        if (password != passwordRe) {
             edt_password_re.error = context.getString(R.string.password_does_not_match)
             return
         }
@@ -486,20 +466,20 @@ class Login @JvmOverloads constructor(
     private fun login(edt_username: EditText, edt_password: EditText) {
         val username = edt_username.text.toString()
         val password = edt_password.text.toString()
-        if (username.equals("")) {
-            edt_username.setError(context.getString(R.string.this_section_can_not_be_empty))
+        if (username == "") {
+            edt_username.error = context.getString(R.string.this_section_can_not_be_empty)
             return
         }
         val isMobile = isInteger(username)
         val isEmail = !isMobile && username.contains("@")
 
-        if ((type_username == TYPE_INNPUT_USERNAME_MOBILE_EMAIL_USERNAME
-                        || type_username == TYPE_INNPUT_USERNAME_MOBILE
-                        || type_username == TYPE_INNPUT_USERNAME_MOBILE_EMAIL)
+        if ((typeUsername == TYPE_INPUT_USERNAME_MOBILE_EMAIL_USERNAME
+                        || typeUsername == TYPE_INPUT_USERNAME_MOBILE
+                        || typeUsername == TYPE_INPUT_USERNAME_MOBILE_EMAIL)
                 && isMobile
         ) {
 
-            if (username.length > 0 && !username[0].equals('0')) {
+            if (username.isNotEmpty() && username[0] != '0') {
                 edt_username.error = context.getString(R.string.mobile_must_by_zero)
                 return
             }
@@ -508,13 +488,13 @@ class Login @JvmOverloads constructor(
                 return
             }
             if (username.length > 11) {
-                edt_username.setError(context.getString(R.string.mobile_invalid))
+                edt_username.error = context.getString(R.string.mobile_invalid)
                 return
             }
 
-        } else if ((type_username == TYPE_INNPUT_USERNAME_MOBILE_EMAIL_USERNAME
-                        || type_username == TYPE_INNPUT_USERNAME_EMAIL
-                        || type_username == TYPE_INNPUT_USERNAME_MOBILE_EMAIL) && isEmail) {
+        } else if ((typeUsername == TYPE_INPUT_USERNAME_MOBILE_EMAIL_USERNAME
+                        || typeUsername == TYPE_INPUT_USERNAME_EMAIL
+                        || typeUsername == TYPE_INPUT_USERNAME_MOBILE_EMAIL) && isEmail) {
             if (username.length < 7) {
                 edt_username.error = context.getString(R.string.email_is_short)
                 return
@@ -526,7 +506,7 @@ class Login @JvmOverloads constructor(
             edt_username.error = context.getString(R.string.username_invalid)
             return
         }
-        if (password.equals("")) {
+        if (password == "") {
             edt_password.error = context.getString(R.string.this_section_can_not_be_empty)
             return
         }
@@ -539,7 +519,7 @@ class Login @JvmOverloads constructor(
             return
         }
         if (onLoginChangeListener != null)
-            onLoginChangeListener!!.onLogined(username, password)
+            onLoginChangeListener!!.onLogged(username, password)
     }
 
     private fun isInteger(str: String?): Boolean {
@@ -551,7 +531,7 @@ class Login @JvmOverloads constructor(
         }
         var i = 0
         if (str[0] == '-') {
-            if (str.length === 1) {
+            if (str.length == 1) {
                 return false
             }
             i = 1
@@ -568,15 +548,16 @@ class Login @JvmOverloads constructor(
 
     private fun skip() {
         if (onLoginChangeListener != null)
-            onLoginChangeListener!!.onSkiped()
+            onLoginChangeListener!!.onSkipped()
     }
 
-    public fun addCustomEditText(hint: String, id: Int) {
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun addCustomEditText(hint: String, id: Int) {
         val params2 = LinearLayout.LayoutParams((screenWidth / 1.5).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
         params2.setMargins(0, 15, 0, 15)
         val edtCustom = EditText(context)
         edtCustom.setPadding(9, 9, 9, 9)
-        if (type_username == TYPE_INNPUT_USERNAME_MOBILE)
+        if (typeUsername == TYPE_INPUT_USERNAME_MOBILE)
             edtCustom.maxEms = 11
 
         edtCustom.hint = hint
@@ -589,17 +570,24 @@ class Login @JvmOverloads constructor(
     }
 
     override fun addView(child: View?, params: ViewGroup.LayoutParams?) {
-        if (child!!.tag == Login::class.java)
-            super.addView(child, params)
-        else if (child is EditText) {
-            addCustomEditText(child.hint.toString(), child.id)
+        when {
+            child!!.tag == Login::class.java -> super.addView(child, params)
+            child is EditText -> addCustomEditText(child.hint.toString(), child.id)
+            else -> {
+
+                val params2 = LinearLayout.LayoutParams((screenWidth / 1.5).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+                params2.setMargins(0, 15, 0, 15)
+                params2.gravity = Gravity.CENTER
+                layoutMore.addView(child, params2)
+
+            }
         }
     }
 
-    val screenWidth: Int
+    private val screenWidth: Int
         get() = Resources.getSystem().displayMetrics.widthPixels
 
-    val screenHeight: Int
+    private val screenHeight: Int
         get() = Resources.getSystem().displayMetrics.heightPixels
 
     /**
@@ -607,19 +595,19 @@ class Login @JvmOverloads constructor(
      */
     interface OnLoginChangeListener {
         /**
-         * [onLogined] a [user]  username and [pass] password for Login input and run with click login button
+         * [onLogged] a [user]  username and [pass] password for Login input and run with click login button
          */
-        fun onLogined(user: String, pass: String)
+        fun onLogged(user: String, pass: String)
 
         /**
          * [onRegistered] a [user]  username and [pass] password for Register input and run with click register button
          */
-        fun onRegistered(user: String, pass: String, args: Array<EditText>)
+        fun onRegistered(user: String, pass: String, args: Array<View>)
 
         /**
-         * [onSkiped] clicked Skip button
+         * [onSkipped] clicked Skip button
          */
-        fun onSkiped()
+        fun onSkipped()
     }
 
     companion object {
@@ -630,20 +618,21 @@ class Login @JvmOverloads constructor(
          * [TYPE_WITH_REGISTER] with page and button register
          * [TYPE_WITH_REGISTER_AND_SKIP] with both above
          */
-        public val TYPE_WITH_NONE = 0
-        public val TYPE_WITH_SKIP = 1
-        public val TYPE_WITH_REGISTER = 2
-        public val TYPE_WITH_REGISTER_AND_SKIP = 3
+        @Suppress("unused")
+        const val TYPE_WITH_NONE = 0
+        const val TYPE_WITH_SKIP = 1
+        const val TYPE_WITH_REGISTER = 2
+        const val TYPE_WITH_REGISTER_AND_SKIP = 3
         /**
          * all types for set input username
          */
-        public val TYPE_INNPUT_USERNAME_EMAIL = 0
-        public val TYPE_INNPUT_USERNAME_MOBILE = 1
-        public val TYPE_INNPUT_USERNAME_USERNAME = 2
-        public val TYPE_INNPUT_USERNAME_USERNAME_EMAIL = 3
-        public val TYPE_INNPUT_USERNAME_USERNAME_MOBILE = 4
-        public val TYPE_INNPUT_USERNAME_MOBILE_EMAIL = 5
-        public val TYPE_INNPUT_USERNAME_MOBILE_EMAIL_USERNAME = 6
+        const val TYPE_INPUT_USERNAME_EMAIL = 0
+        const val TYPE_INPUT_USERNAME_MOBILE = 1
+        const val TYPE_INPUT_USERNAME_USERNAME = 2
+        const val TYPE_INPUT_USERNAME_USERNAME_EMAIL = 3
+        const val TYPE_INPUT_USERNAME_USERNAME_MOBILE = 4
+        const val TYPE_INPUT_USERNAME_MOBILE_EMAIL = 5
+        const val TYPE_INPUT_USERNAME_MOBILE_EMAIL_USERNAME = 6
 
     }
 }
