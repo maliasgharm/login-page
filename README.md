@@ -59,7 +59,7 @@ for Listening Login / register / skip clicked  write Below code on Activity and 
                 Log.w("LoginActivity","onLogined : "+username+"_"+password);
             }
             @Override
-            public void onRegistered(String username, String password) {
+            public void onRegistered(String username, String password ,View[] moreViews) {
                 Log.w("LoginActivity","onRegistered : "+username+"_"+password);
             }
             @Override
