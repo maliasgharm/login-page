@@ -1,5 +1,4 @@
-[![](https://jitpack.io/v/maliasgharm/PageLoginExample.svg)](https://jitpack.io/#maliasgharm/PageLoginExample)
-
+[![](https://jitpack.io/v/maliasgharm/login-page.svg)](https://jitpack.io/#maliasgharm/login-page)
 
 Step 1. Add it in your root build.gradle at the end of repositories:
 
@@ -12,8 +11,8 @@ Step 1. Add it in your root build.gradle at the end of repositories:
 Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.maliasgharm:login-page:1.0.10'
-	}
+	        implementation 'com.github.maliasgharm:login-page:1.0.12'
+		}
 
 
 You Must Decleare layout on Activity 
