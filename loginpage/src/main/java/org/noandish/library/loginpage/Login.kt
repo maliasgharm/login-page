@@ -273,8 +273,6 @@ class Login @JvmOverloads constructor(
         btnSkip.visibility = if (typeLoginView == TYPE_WITH_SKIP || typeLoginView == TYPE_WITH_REGISTER_AND_SKIP)
             View.VISIBLE else View.INVISIBLE
 
-        @Suppress("SpellCheckingInspection")
-        svLogin.setBackgroundColor(Color.parseColor("#55ffffff"))
 
     }
 
@@ -485,8 +483,6 @@ class Login @JvmOverloads constructor(
         linearLayout.addView(btnLogin, params4)
         btnSkip.visibility = if (typeLoginView == TYPE_WITH_SKIP || typeLoginView == TYPE_WITH_REGISTER_AND_SKIP)
             View.VISIBLE else View.INVISIBLE
-        @Suppress("SpellCheckingInspection")
-        svRegister.setBackgroundColor(Color.parseColor("#55FFFFFF"))
     }
 
     private fun register(edt_username: EditText
@@ -620,6 +616,7 @@ class Login @JvmOverloads constructor(
         svRegister.addView(layerRegister)
         paramsLayoutsMain.setMargins(0, 10, 0, 50)
         layerMain.addView(svRegister, paramsScrollView2)
+        setBackgroundColor(Color.parseColor("#55ffffff"))
 
         paramsLayoutsMain.addRule(ABOVE, R.id.btn_skip)
         addView(layerMain, paramsLayoutsMain)
