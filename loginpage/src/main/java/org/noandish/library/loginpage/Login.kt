@@ -359,7 +359,7 @@ class Login @JvmOverloads constructor(
             params.addRule(CENTER_IN_PARENT)
             layerMainSplash.addView(linearLayout, params)
             @Suppress("SpellCheckingInspection")
-            layerMainSplash.setBackgroundColor(Color.parseColor("#22ffffff"))
+//            layerMainSplash.setBackgroundColor(Color.parseColor("#22ffffff"))
             btnRegister.setOnClickListener { showRegister() }
         }
     }
