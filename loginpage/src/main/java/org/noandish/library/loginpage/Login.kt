@@ -616,7 +616,7 @@ class Login @JvmOverloads constructor(
         svRegister.addView(layerRegister)
         paramsLayoutsMain.setMargins(0, 10, 0, 50)
         layerMain.addView(svRegister, paramsScrollView2)
-        setBackgroundColor(Color.parseColor("#55ffffff"))
+//        setBackgroundColor(Color.parseColor("#55ffffff"))
 
         paramsLayoutsMain.addRule(ABOVE, R.id.btn_skip)
         addView(layerMain, paramsLayoutsMain)
